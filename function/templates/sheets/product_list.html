@@ -1,0 +1,9 @@
+{% extends "list.html" %}
+{% block content %}
+<h1>Список товаров:</h1>
+<ul>
+    {% for p in products %}
+        <li>{{ p.title }} — Купить за {{ p.price }} руб.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

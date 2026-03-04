@@ -1,0 +1,95 @@
+[
+    {"model": "function.product", "pk": 1, "fields": {"title": "Lava Red Magma", "manufacturer": 1, "category": 1, "price": "2500.00", "amount_in_stock": 10, "description": "Гипнотическое движение красного воска в прозрачной жидкости."}},
+  {"model": "function.product", "pk": 2, "fields": {"title": "Lava Blue Ocean", "manufacturer": 1, "category": 1, "price": "2600.00", "amount_in_stock": 8, "description": "Мягкое синее свечение, напоминающее глубины океана."}},
+  {"model": "function.product", "pk": 3, "fields": {"title": "Lava Green Toxic", "manufacturer": 1, "category": 1, "price": "2400.00", "amount_in_stock": 5, "description": "Ярко-зеленый воск для создания футуристичной атмосферы."}},
+  {"model": "function.product", "pk": 4, "fields": {"title": "Neon Cyber Mask", "manufacturer": 2, "category": 2, "price": "4500.00", "amount_in_stock": 3, "description": "Настенная неоновая маска в стиле Cyberpunk 2077."}},
+  {"model": "function.product", "pk": 5, "fields": {"title": "Neon Pizza Slice", "manufacturer": 2, "category": 2, "price": "3200.00", "amount_in_stock": 12, "description": "Аппетитный кусочек пиццы из гибкого неона для кухни или кафе."}},
+  {"model": "function.product", "pk": 6, "fields": {"title": "Neon Game Over", "manufacturer": 2, "category": 2, "price": "3800.00", "amount_in_stock": 7, "description": "Классическая надпись для фанатов ретро-гейминга."}},
+  {"model": "function.product", "pk": 7, "fields": {"title": "Levitating Moon", "manufacturer": 5, "category": 3, "price": "8900.00", "amount_in_stock": 4, "description": "Детализированная копия Луны, парящая над деревянной базой."}},
+  {"model": "function.product", "pk": 8, "fields": {"title": "Levitating Bulb", "manufacturer": 5, "category": 3, "price": "7500.00", "amount_in_stock": 6, "description": "Парящая в воздухе лампа накаливания с беспроводной передачей энергии."}},
+  {"model": "function.product", "pk": 9, "fields": {"title": "Levitating Bonsai", "manufacturer": 5, "category": 3, "price": "11000.00", "amount_in_stock": 2, "description": "Магнитная подставка для небольших растений, которая медленно вращается."}},
+  {"model": "function.product", "pk": 10, "fields": {"title": "Salt Rock Classic", "manufacturer": 4, "category": 4, "price": "1800.00", "amount_in_stock": 20, "description": "Цельный кристалл гималайской соли с теплым оранжевым светом."}},
+  {"model": "function.product", "pk": 11, "fields": {"title": "Salt Pyramid RGB", "manufacturer": 4, "category": 4, "price": "2200.00", "amount_in_stock": 15, "description": "Солевая лампа в форме пирамиды с функцией смены цветов."}},
+  {"model": "function.product", "pk": 12, "fields": {"title": "Salt Sphere 5kg", "manufacturer": 4, "category": 4, "price": "3500.00", "amount_in_stock": 9, "description": "Идеально отшлифованный шар из розовой соли весом 5 кг."}},
+  {"model": "function.product", "pk": 13, "fields": {"title": "RGB Hex Panels", "manufacturer": 1, "category": 5, "price": "12000.00", "amount_in_stock": 5, "description": "Набор из 7 шестигранных панелей с синхронизацией под музыку."}},
+  {"model": "function.product", "pk": 14, "fields": {"title": "RGB Triangle Kit", "manufacturer": 1, "category": 5, "price": "9500.00", "amount_in_stock": 7, "description": "Треугольные световые панели для создания уникальных узоров на стене."}},
+  {"model": "function.product", "pk": 15, "fields": {"title": "Smart LED Bar", "manufacturer": 5, "category": 5, "price": "4200.00", "amount_in_stock": 11, "description": "Вертикальная световая стойка с управлением через приложение."}},
+  {"model": "function.product", "pk": 16, "fields": {"title": "Wood Oak Glow", "manufacturer": 3, "category": 6, "price": "5400.00", "amount_in_stock": 4, "description": "Ночник из массива дуба со вставками из светящейся смолы."}},
+  {"model": "function.product", "pk": 17, "fields": {"title": "Wood Pine Forest", "manufacturer": 3, "category": 6, "price": "4100.00", "amount_in_stock": 6, "description": "Резной светильник с силуэтом леса и мягкой подсветкой."}},
+  {"model": "function.product", "pk": 18, "fields": {"title": "Wood Resin Book", "manufacturer": 3, "category": 6, "price": "3200.00", "amount_in_stock": 8, "description": "Складной светильник в форме книги в деревянной обложке."}},
+  {"model": "function.product", "pk": 19, "fields": {"title": "Projector Astronaut", "manufacturer": 1, "category": 7, "price": "3800.00", "amount_in_stock": 25, "description": "Милый астронавт, проецирующий туманности на любую поверхность."}},
+  {"model": "function.product", "pk": 20, "fields": {"title": "Galaxy Star Sphere", "manufacturer": 5, "category": 7, "price": "2900.00", "amount_in_stock": 30, "description": "Компактный шар-проектор с эффектом вращающегося звездного неба."}},
+  {"model": "function.product", "pk": 21, "fields": {"title": "Northern Lights Pro", "manufacturer": 5, "category": 7, "price": "6500.00", "amount_in_stock": 10, "description": "Профессиональный проектор с реалистичной имитацией северного сияния."}},
+  {"model": "function.product", "pk": 22, "fields": {"title": "Steam Pipe Robot", "manufacturer": 3, "category": 8, "price": "8500.00", "amount_in_stock": 3, "description": "Настольная лампа в виде сидящего робота из водопроводных труб."}},
+  {"model": "function.product", "pk": 23, "fields": {"title": "Gauge Desk Lamp", "manufacturer": 3, "category": 8, "price": "7200.00", "amount_in_stock": 5, "description": "Светильник со встроенным манометром и вентилем в стиле ретро."}},
+  {"model": "function.product", "pk": 24, "fields": {"title": "Brass Cog Light", "manufacturer": 3, "category": 8, "price": "9800.00", "amount_in_stock": 2, "description": "Сложная конструкция из латунных шестеренок и ламп Эдисона."}},
+  {"model": "function.product", "pk": 25, "fields": {"title": "Tesla Plasma Ball", "manufacturer": 5, "category": 9, "price": "3300.00", "amount_in_stock": 18, "description": "Стеклянный шар с молниями, реагирующими на прикосновение пальцев."}},
+  {"model": "function.product", "pk": 26, "fields": {"title": "Crystal Saturn Ball", "manufacturer": 4, "category": 9, "price": "2700.00", "amount_in_stock": 22, "description": "Стеклянная сфера с объемным изображением Сатурна внутри."}},
+  {"model": "function.product", "pk": 27, "fields": {"title": "Crystal Galaxy Cube", "manufacturer": 4, "category": 9, "price": "3100.00", "amount_in_stock": 14, "description": "Куб из оптического стекла с лазерной гравировкой Млечного Пути."}},
+  {"model": "function.product", "pk": 28, "fields": {"title": "Edison Globe XL", "manufacturer": 4, "category": 10, "price": "1200.00", "amount_in_stock": 40, "description": "Крупная декоративная лампа с фигурной вольфрамовой нитью."}},
+  {"model": "function.product", "pk": 29, "fields": {"title": "Retro String Light", "manufacturer": 4, "category": 10, "price": "2800.00", "amount_in_stock": 15, "description": "10-метровая гирлянда с винтажными лампами для террасы или лофта."}},
+  {"model": "function.product", "pk": 30, "fields": {"title": "Brass Loft Cage", "manufacturer": 3, "category": 10, "price": "3900.00", "amount_in_stock": 10, "description": "Подвесной светильник в защитной металлической клетке."}},
+  {"model": "function.product", "pk": 31, "fields": {"title": "Mushrooms Nightlight", "manufacturer": 1, "category": 6, "price": "1800.00", "amount_in_stock": 20, "description": "Сказочный ночник с миниатюрными светящимися грибами."}},
+  {"model": "function.product", "pk": 32, "fields": {"title": "Neon Coffee Sign", "manufacturer": 2, "category": 2, "price": "4100.00", "amount_in_stock": 5, "description": "Классическая вывеска 'Coffee' для уютной кофейни."}},
+  {"model": "function.product", "pk": 33, "fields": {"title": "Levitating Globe", "manufacturer": 5, "category": 3, "price": "6700.00", "amount_in_stock": 7, "description": "Географический глобус, вращающийся в электромагнитном поле."}},
+  {"model": "function.product", "pk": 34, "fields": {"title": "Crystal Jellyfish LED", "manufacturer": 4, "category": 9, "price": "3500.00", "amount_in_stock": 11, "description": "Стеклянная медуза с плавно меняющейся многоцветной подсветкой."}},
+  
+  {"model": "users.CustomUser", "pk": 1, "fields": {"username": "user1", "is_active": true, "is_staff": false}},
+  {"model": "users.CustomUser", "pk": 2, "fields": {"username": "user2", "is_active": true, "is_staff": false}},
+  {"model": "users.CustomUser", "pk": 3, "fields": {"username": "user3", "is_active": true, "is_staff": false}},
+  {"model": "users.CustomUser", "pk": 4, "fields": {"username": "user4", "is_active": true, "is_staff": false}},
+  {"model": "users.CustomUser", "pk": 5, "fields": {"username": "user5", "is_active": true, "is_staff": false}},
+
+  {
+    "model": "function.cart",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "creation_date": "2024-05-20T10:00:00Z"
+    }
+  },
+  {
+    "model": "function.cart",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "creation_date": "2024-05-20T10:05:00Z"
+    }
+  },
+  {
+    "model": "function.cart",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "creation_date": "2024-05-20T10:10:00Z"
+    }
+  },
+  {
+    "model": "function.cart",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "creation_date": "2024-05-20T10:15:00Z"
+    }
+  },
+  {
+    "model": "function.cart",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "creation_date": "2024-05-20T10:20:00Z"
+    }
+  },
+
+  {"model": "function.cart_item", "pk": 1, "fields": {"cart": 1, "product": 7}},
+  {"model": "function.cart_item", "pk": 2, "fields": {"cart": 1, "product": 28}},
+  {"model": "function.cart_item", "pk": 3, "fields": {"cart": 2, "product": 4}},
+  {"model": "function.cart_item", "pk": 4, "fields": {"cart": 2, "product": 25}},
+  {"model": "function.cart_item", "pk": 5, "fields": {"cart": 3, "product": 16}},
+  {"model": "function.cart_item", "pk": 6, "fields": {"cart": 3, "product": 18}},
+  {"model": "function.cart_item", "pk": 7, "fields": {"cart": 4, "product": 22}},
+  {"model": "function.cart_item", "pk": 8, "fields": {"cart": 4, "product": 19}},
+  {"model": "function.cart_item", "pk": 9, "fields": {"cart": 5, "product": 30}},
+  {"model": "function.cart_item", "pk": 10, "fields": {"cart": 5, "product": 1}}
+  ]
+  

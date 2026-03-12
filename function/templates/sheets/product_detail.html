@@ -1,0 +1,23 @@
+{% extends "shablon.html" %}
+{% load static %}
+{% block content %}
+<title>Информация о продукте</title>
+<h1>{{ product.name }}</h1>
+
+<p><strong>Категория:</strong> {{ product.category.title }}</p>
+<p><strong>Производитель:</strong> {{ product.manufacturer.title }} ({{ product.manufacturer.country }})</p>
+<p><strong>Цена:</strong> {{ product.price }} руб</p>
+<p><strong>В наличии:</strong> {{ product.amount_in_stock }} шт.</p>
+<p><strong>Описание:</strong> {{ product.description }}</p>
+<div>
+   {% if product.product_photo %}
+        <img src="{{ product.product_photo.url }}" alt="{{ product.title }}" style="max-width: 500px;">
+    {% else %}
+        <p>Изображение отсутствует</p>
+    {% endif %}
+
+<!--{% if user.is_authenticated and product.amount_in_stock > 0 %}
+    <a href="{% url 'add_to_cart' product.id %}"><button type="submit">Добавить в корзину</button></a>
+    <a href="{% url 'product_list'%}"><button type="submit">В каталог</button></a>
+{% endif %}-->
+{% endblock %}

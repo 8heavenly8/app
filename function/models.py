@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 class Light(models.Model):
     title = models.CharField(max_length=200, verbose_name="Название")

@@ -46,24 +46,18 @@ class Cart(models.Model):
     def __str__(self):
         return f"Корзина пользователя {self.user.username}"
     
-    def total_cost(self):
-        return sum(item.item_cost() for item in self.items.all())
+    def total_price(self):
+        return sum(item.item_price() for item in self.items.all())
 
 class Cart_item(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items', verbose_name="Корзина")
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name="Товар")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
     amount = models.PositiveIntegerField(default=1, verbose_name="Количество")
 
     def __str__(self):
         return f"{self.product.title} — {self.amount} шт."
-    
-    def item_cost(self):
+    def item_price(self):
         return self.product.price * self.amount
-
     def clean(self):
-        if self.product.amount_in_stock < self.amount:
-            raise ValidationError(f"Недостаточно товара! На складе: {self.product.amount_in_stock}")
-
-    def save(self, *args, **kwargs):
-        self.full_clean() 
-        super().save(*args, **kwargs)
+        if self.amount > self.product.stock:
+            raise ValidationError("Нету такого количества в наличии")

@@ -41,7 +41,7 @@
               <h3>{{p.title}}/{{ p.category.title }}</h3>
                 <span class="price">₽ {{p.price}} </span>
                 <p>В наличии: {{ p.amount_in_stock }}</p>
-                <a href="" class="button">В корзину</a>
+                <a href="{% url 'add_to_cart' item_id=p.id %}" class="button">В корзину</a>
 
             </div>
           </div>

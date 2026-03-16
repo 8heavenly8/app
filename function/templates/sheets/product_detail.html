@@ -11,13 +11,9 @@
 <p><strong>Описание:</strong> {{ product.description }}</p>
 <div>
    {% if product.product_photo %}
-        <img src="{{ product.product_photo.url }}" alt="{{ product.title }}" style="max-width: 500px;">
+        <img src="{%static product.product_photo.url %}" alt="{{ product.title }}" style="max-width: 500px;">
     {% else %}
         <p>Изображение отсутствует</p>
     {% endif %}
 
-<!--{% if user.is_authenticated and product.amount_in_stock > 0 %}
-    <a href="{% url 'add_to_cart' product.id %}"><button type="submit">Добавить в корзину</button></a>
-    <a href="{% url 'product_list'%}"><button type="submit">В каталог</button></a>
-{% endif %}-->
 {% endblock %}

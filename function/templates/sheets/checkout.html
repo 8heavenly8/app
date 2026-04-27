@@ -1,6 +1,7 @@
 {% extends "list.html" %}
 
 {% block content %}
+
     <h1>Оформление заказа</h1>
 
     {% if items %}
@@ -13,8 +14,8 @@
             </tr>
             {% for item in items %}
             <tr>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.quantity }}</td>
+                <td>{{ item.product.title }}</td>
+                <td>{{ item.amount }}</td>
                 <td>{{ item.product.price }} руб.</td>
                 <td>{{ item.item_price }} руб.</td>
             </tr>

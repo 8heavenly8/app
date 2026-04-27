@@ -1,0 +1,29 @@
+{% extends "list.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+    <div style="max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h2 style="text-align: center;">Вход</h2>
+        {% if form.errors %}
+            <p class="errorlist" style="text-align: center;">Неверное имя пользователя или пароль.</p>
+        {% endif %}
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Имя пользователя</label>
+                <input type="text" name="username" id="id_username" required>
+            </div>
+            <div class="form-group">
+                <label for="id_password">Пароль</label>
+                <input type="password" name="password" id="id_password" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'register' %}" class="btn btn-secondary" style="margin-right: 10px;">Регистрация</a>
+            <a href="{% url 'catalog' %}" class="btn btn-secondary">На главную</a>
+        </div>
+    </div>
+{% endblock %}

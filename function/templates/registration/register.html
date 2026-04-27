@@ -1,0 +1,33 @@
+{% extends "list.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+    <div style="max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h2 style="text-align: center;">Регистрация</h2>
+        
+        <form method="post"> 
+            {% csrf_token %}
+            
+            {# Вывод ошибок, если форма не заполнена правильно #}
+            {% if form.errors %}
+                <div style="color: red; margin-bottom: 15px;">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+
+            {# Сами поля формы (username, email, пароли) #}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Зарегистрироваться
+            </button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 15px;">
+            Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
+        </p>
+    </div>
+{% endblock %}

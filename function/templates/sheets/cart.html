@@ -3,6 +3,16 @@
 {% block title %}Корзина{% endblock %}
 
 {% block content %}
+    {% if user.is_authenticated %}
+        <p>Привет, {{ user.username }}!</p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">Выйти</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Войти</a>
+    {% endif %}
+
     <h1>🛒 Ваша корзина</h1>
 
     {% if cart_items %}
@@ -16,7 +26,7 @@
             </tr>
             {% for item in cart_items %}
             <tr>
-                <td><strong>{{ item.product.name }}</strong></td>
+                <td><strong>{{ item.product.title }}</strong></td>
                 <td>{{ item.product.price }} руб.</td>
                 <td>
                     <form method="post" action="{% url 'cart_update' item.product.id %}" style="display: flex; gap: 5px;">
@@ -37,7 +47,7 @@
 
         <div style="display: flex; justify-content: space-between; margin-top: 20px;">
             <a href="{% url 'catalog' %}" class="btn btn-secondary">📦 Вернуться в каталог</a>
-            
+            <a href="{% url 'checkout' %}" class="btn btn-primary" style="font-size: 16px; padding: 12px 30px;">✅ Оформить заказ</a>
         </div>
     {% else %}
         <p style="text-align: center; color: #777; font-size: 18px; margin: 50px;">🛍️ Корзина пуста</p>

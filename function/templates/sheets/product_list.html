@@ -1,7 +1,18 @@
 {% extends "list.html" %}
 {% load static %}
 {% block category %}
-<title>Каталог</title>
+    {% if user.is_authenticated %}
+        <p>Привет, {{ user.username }}!</p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">Выйти</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Войти</a>
+    {% endif %}
+
+
+    <a href="{% url 'cart_view' %}" class="btn btn-secondary">Корзина</a>
 
 <h1>Каталог</h1>
 

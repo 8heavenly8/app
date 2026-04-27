@@ -1,0 +1,86 @@
+[ {"model": "function.manufacturer", "pk": 1, "fields": {"title": "LuminaArt"}},
+  {"model": "function.manufacturer", "pk": 2, "fields": {"title": "NeonVibe"}},
+  {"model": "function.manufacturer", "pk": 3, "fields": {"title": "WoodGlow"}},
+  {"model": "function.manufacturer", "pk": 4, "fields": {"title": "GlassMagic"}},
+  {"model": "function.manufacturer", "pk": 5, "fields": {"title": "TeslaTech"}},
+  {
+    "model": "function.category",
+    "pk": 1,
+    "fields": {
+      "title": "Лавовые лампы",
+      "description": "Классические декоративные светильники с плавающим воском для создания релакс-атмосферы."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 2,
+    "fields": {
+      "title": "Неоновые вывески",
+      "description": "Яркие гибкие неоновые решения для оформления интерьера в стиле киберпанк или ретро."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 3,
+    "fields": {
+      "title": "Левитирующие лампы",
+      "description": "Футуристичные светильники, парящие в воздухе за счет магнитной левитации."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 4,
+    "fields": {
+      "title": "Гималайская соль",
+      "description": "Натуральные ионизаторы воздуха из розовой соли, излучающие мягкий теплый свет."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 5,
+    "fields": {
+      "title": "Умные RGB-панели",
+      "description": "Модульные настенные панели с управлением со смартфона и миллионами цветов."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 6,
+    "fields": {
+      "title": "Деревянные ночники",
+      "description": "Экологичные светильники из массива дерева и эпоксидной смолы ручной работы."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 7,
+    "fields": {
+      "title": "Проекторы звездного неба",
+      "description": "Устройства для создания проекции галактик и созвездий прямо на потолке вашей комнаты."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 8,
+    "fields": {
+      "title": "Стимпанк светильники",
+      "description": "Индустриальный дизайн: лампы из чугунных труб, латуни и шестеренок."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 9,
+    "fields": {
+      "title": "Кристаллические шары",
+      "description": "Стеклянные сферы с лазерной гравировкой внутри, подсвеченные яркими светодиодами."
+    }
+  },
+  {
+    "model": "function.category",
+    "pk": 10,
+    "fields": {
+      "title": "Винтажные лампы Эдисона",
+      "description": "Декоративные лампы накаливания с фигурной нитью для создания уютного лофт-освещения."
+    }
+  }
+]

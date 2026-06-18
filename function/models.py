@@ -3,6 +3,8 @@ from django.core.validators import MinValueValidator
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Light(models.Model):
     title = models.CharField(max_length=200, verbose_name="Название")
@@ -78,3 +80,43 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE,verbose_name="Товары")
     quantity = models.PositiveIntegerField(verbose_name="Количество")
     price = models.DecimalField(max_digits=10,decimal_places=2,verbose_name="Цена")
+class Profile(models.Model):
+    ROLE_CHOICES = [
+        ('CUSTOMER', 'Покупатель'),
+        ('MANAGER', 'Менеджер'),
+        ('ADMIN', 'Администратор'),
+    ]
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    full_name = models.CharField('Полное имя', max_length=200, blank=True)
+    phone = models.CharField('Телефон', max_length=20, blank=True)
+    address = models.TextField('Адрес', blank=True)
+    city = models.CharField('Город доставки', max_length=100, blank=True)
+    postal_code = models.CharField('Индекс', max_length=20, blank=True)
+    favorite_category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Любимая категория')
+    role = models.CharField('Роль', max_length=20, choices=ROLE_CHOICES, default='CUSTOMER')
+    avatar = models.ImageField('Аватар', upload_to='avatars/', blank=True, null=True)
+    created_at = models.DateTimeField('Дата регистрации', auto_now_add=True)
+    updated_at = models.DateTimeField('Дата обновления', auto_now=True)
+    
+    def __str__(self):
+        return f'{self.user.username} - {self.get_role_display()}'
+    
+    def is_admin(self):
+        return self.role == 'ADMIN' or self.user.is_superuser
+    
+    def is_manager(self):
+        return self.role in ['MANAGER', 'ADMIN'] or self.user.is_superuser
+    
+    class Meta:
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Профили'
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()

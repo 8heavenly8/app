@@ -1,65 +1,337 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{% block title %}СветМир{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        /* Стильная навигация */
+        .navbar-custom {
+            background: #ffffff;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            padding: 12px 0;
+            border-bottom: 3px solid #fc5a5a;
+        }
+        
+        .navbar-custom .navbar-brand {
+            font-weight: 800;
+            font-size: 24px;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
+        }
+        
+        .navbar-custom .navbar-brand i {
+            color: #fc5a5a;
+            margin-right: 8px;
+        }
+        
+        .navbar-custom .nav-link {
+            color: #2c3e50 !important;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            position: relative;
+        }
+        
+        .navbar-custom .nav-link:hover {
+            background: #f8f9fa;
+            color: #fc5a5a !important;
+        }
+        
+        .navbar-custom .nav-link i {
+            margin-right: 6px;
+        }
+        
+        /* Активная ссылка */
+        .navbar-custom .nav-link.active {
+            background: #fc5a5a;
+            color: white !important;
+        }
+        
+        .navbar-custom .nav-link.active:hover {
+            background: #e74c3c;
+            color: white !important;
+        }
+        
+        /* Кнопки входа/регистрации */
+        .btn-login {
+            background: transparent;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+            padding: 8px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .btn-login:hover {
+            border-color: #fc5a5a;
+            color: #fc5a5a;
+            background: rgba(252, 90, 90, 0.05);
+        }
+        
+        .btn-register {
+            background: #fc5a5a;
+            color: white;
+            border: 2px solid #fc5a5a;
+            padding: 8px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .btn-register:hover {
+            background: #e74c3c;
+            border-color: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(252, 90, 90, 0.3);
+        }
+        
+        /* Аватар пользователя */
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fc5a5a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .user-menu .dropdown-toggle::after {
+            display: none;
+        }
+        
+        .user-menu .dropdown-menu {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            padding: 8px;
+            min-width: 200px;
+        }
+        
+        .user-menu .dropdown-item {
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-weight: 500;
+            transition: .3s;
+        }
+        
+        .user-menu .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #fc5a5a;
+        }
+        
+        .user-menu .dropdown-item i {
+            margin-right: 10px;
+            width: 20px;
+            color: #95a5a6;
+        }
+        
+        .user-menu .dropdown-item:hover i {
+            color: #fc5a5a;
+        }
+        
+        .user-menu .dropdown-divider {
+            margin: 8px 0;
+        }
+        
+        /* Счетчик корзины */
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #fc5a5a;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .nav-cart {
+            position: relative;
+        }
+        
+        /* Мобильная адаптация */
+        @media (max-width: 992px) {
+            .navbar-custom .navbar-nav {
+                margin-top: 10px;
+            }
+            .navbar-custom .nav-link {
+                padding: 10px 15px;
+            }
+            .btn-login, .btn-register {
+                display: block;
+                text-align: center;
+                margin: 5px 0;
+            }
+        }
+    </style>
 </head>
-<style>
-    * {
-   box-sizing: border-box;
-}
-.product-item {
-   width: 300px;
-   text-align: center;
-   margin: 0 auto;
-   border-bottom: 2px solid #F5F5F5;
-   background: white;
-   font-family: "Open Sans";
-   transition: .3s ease-in;
-}
-.product-item:hover {
-   border-bottom: 2px solid #fc5a5a;
-}
-.product-item img {
-   display: block;
-   width: 100%;
-}
-.product-list {
-   background: #fafafa;
-   padding: 15px 0;
-}
-.product-list h3 {
-   font-size: 18px;
-   font-weight: 400;
-   color: #444444;
-   margin: 0 0 10px 0;
-}
-.price {
-   font-size: 16px;
-   color: #fc5a5a;
-   display: block;
-   margin-bottom: 12px;
-}
-.button {
-   text-decoration: none;
-   display: inline-block;
-   padding: 0 12px;
-   background: #cccccc;
-   color: white;
-   text-transform: uppercase;
-   font-size: 12px;
-   line-height: 28px;
-   transition: .3s ease-in;
-}
-.product-item:hover .button {
-   background: #fc5a5a;
-}
-</style>
 <body>
-   {% block category %}
-   {% endblock %}
-	{% block content %}
-	{% endblock %}
+
+<!-- ========== НАВИГАЦИЯ ========== -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="bi bi-lamp-fill"></i> СветМир
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+                        <i class="bi bi-house"></i> Главная
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'catalog' in request.path %}active{% endif %}" href="{% url 'catalog' %}">
+                        <i class="bi bi-grid"></i> Каталог
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'cart' in request.path %}active{% endif %} nav-cart" href="{% url 'cart_view' %}">
+                        <i class="bi bi-cart"></i> Корзина
+                        <span class="cart-badge" id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <ul class="navbar-nav align-items-center">
+                {% if user.is_authenticated %}
+                    <!-- Авторизован -->
+                    <li class="nav-item dropdown user-menu">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                            <span class="user-avatar">{{ user.username|first|upper }}</span>
+                            <span style="font-weight: 600; color: #2c3e50;">{{ user.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                <i class="bi bi-person"></i> Личный кабинет
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="bi bi-clock-history"></i> Мои заказы
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left; color: #e74c3c;">
+                                        <i class="bi bi-box-arrow-right"></i> Выйти
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <!-- Не авторизован -->
+                    <li class="nav-item me-2">
+                        <a class="btn-login" href="{% url 'login' %}">
+                            <i class="bi bi-box-arrow-in-right"></i> Войти
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn-register" href="{% url 'register' %}">
+                            <i class="bi bi-person-plus"></i> Регистрация
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ========== ОСНОВНОЙ КОНТЕНТ ========== -->
+<main style="min-height: 70vh; padding: 30px 0;">
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </div>
+</main>
+
+<!-- ========== ФУТЕР ========== -->
+<footer style="background: #2c3e50; color: rgba(255,255,255,0.7); padding: 40px 0 20px; margin-top: 30px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5 style="color: white; font-weight: 700;">
+                    <i class="bi bi-lamp-fill" style="color: #fc5a5a;"></i> СветМир
+                </h5>
+                <p style="font-size: 14px;">Качественные светильники для вашего дома и офиса.</p>
+                <p style="font-size: 12px; opacity: 0.6;">© 2024 СветМир. Все права защищены.</p>
+            </div>
+            <div class="col-md-4">
+                <h6 style="color: white;">Контакты</h6>
+                <p style="font-size: 14px;"><i class="bi bi-envelope"></i> info@svetmir.ru</p>
+                <p style="font-size: 14px;"><i class="bi bi-phone"></i> +7 (999) 123-45-67</p>
+            </div>
+            <div class="col-md-4">
+                <h6 style="color: white;">Мы в соцсетях</h6>
+                <div style="display: flex; gap: 12px; font-size: 22px;">
+                    <a href="#" style="color: rgba(255,255,255,0.6);"><i class="bi bi-telegram"></i></a>
+                    <a href="#" style="color: rgba(255,255,255,0.6);"><i class="bi bi-vk"></i></a>
+                    <a href="#" style="color: rgba(255,255,255,0.6);"><i class="bi bi-youtube"></i></a>
+                    <a href="#" style="color: rgba(255,255,255,0.6);"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+
+<!-- Обновление счетчика корзины -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const badge = document.getElementById('cart-count');
+    if (badge) {
+        fetch('/api/cart/count/')
+            .then(response => response.json())
+            .then(data => {
+                badge.textContent = data.count || 0;
+            })
+            .catch(() => {});
+    }
+});
+</script>
+
+{% block scripts %}{% endblock %}
 </body>
 </html>

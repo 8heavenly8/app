@@ -1,33 +1,36 @@
-{% extends "list.html" %}
+{% extends "shablon.html" %}
 
 {% block title %}Регистрация{% endblock %}
 
 {% block content %}
-    <div style="max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h2 style="text-align: center;">Регистрация</h2>
-        
-        <form method="post"> 
-            {% csrf_token %}
-            
-            {# Вывод ошибок, если форма не заполнена правильно #}
-            {% if form.errors %}
-                <div style="color: red; margin-bottom: 15px;">
-                    {{ form.errors }}
-                </div>
-            {% endif %}
-
-            {# Сами поля формы (username, email, пароли) #}
-            <div class="form-group">
-                {{ form.as_p }}
+<div style="max-width: 500px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <h2 style="text-align: center; color: #2c3e50;">Регистрация</h2>
+    
+    {% if form.errors %}
+        <div style="background: #fde8e8; padding: 10px; border-radius: 8px; color: #e74c3c; margin-bottom: 15px;">
+            Исправьте ошибки в форме
+        </div>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight: 600; color: #2c3e50; display: block; margin-bottom: 5px;">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                    <small style="color: #e74c3c;">{{ field.errors|join:", " }}</small>
+                {% endif %}
             </div>
-
-            <button type="submit" style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Зарегистрироваться
-            </button>
-        </form>
-        
-        <p style="text-align: center; margin-top: 15px;">
-            Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
-        </p>
-    </div>
+        {% endfor %}
+        <button type="submit" style="width: 100%; background: #fc5a5a; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Зарегистрироваться
+        </button>
+    </form>
+    <p style="text-align: center; margin-top: 15px;">
+        Уже есть аккаунт? <a href="{% url 'login' %}" style="color: #fc5a5a;">Войти</a>
+    </p>
+</div>
 {% endblock %}

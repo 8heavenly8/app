@@ -1,61 +1,155 @@
 {% extends "list.html" %}
 {% load static %}
+
 {% block category %}
-    {% if user.is_authenticated %}
-        <p>Привет, {{ user.username }}!</p>
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-secondary">Выйти</button>
-        </form>
-    {% else %}
-        <a href="{% url 'login' %}">Войти</a>
-    {% endif %}
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px;">
 
+    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        {% if user.is_authenticated %}
+            <span style="font-weight: 600; color: #2c3e50;">
+                <i class="bi bi-person-circle" style="color: #fc5a5a;"></i> 
+                Привет, {{ user.username }}!
+            </span>
+            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background: #e74c3c; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: .3s;">
+                    <i class="bi bi-box-arrow-right"></i> Выйти
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" style="text-decoration: none; background: #3498db; color: white; padding: 8px 25px; border-radius: 8px; font-weight: 600; transition: .3s;">
+                <i class="bi bi-box-arrow-in-right"></i> Войти
+            </a>
+            <a href="{% url 'register' %}" style="text-decoration: none; background: #2ecc71; color: white; padding: 8px 25px; border-radius: 8px; font-weight: 600; transition: .3s;">
+                <i class="bi bi-person-plus"></i> Регистрация
+            </a>
+        {% endif %}
+    </div>
+    
+    <div>
+        <a href="{% url 'cart_view' %}" style="text-decoration: none; background: #fc5a5a; color: white; padding: 8px 25px; border-radius: 8px; font-weight: 600; transition: .3s; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="bi bi-cart"></i> Корзина
+            <span style="background: white; color: #fc5a5a; border-radius: 50%; padding: 0 8px; font-size: 12px;" id="cart-count">{{ cart_count|default:0 }}</span>
+        </a>
+    </div>
+</div>
 
-    <a href="{% url 'cart_view' %}" class="btn btn-secondary">Корзина</a>
-
-<h1>Каталог</h1>
-
-<form method="get">
-    <input type="text" name="search" placeholder="Поиск" value="{{ request.GET.search|default:'' }}">
-    
-    <select name="category">
-        <option value="">Все категории</option>
-        {% for categ in category %}
-        <option value="{{ categ.id }}" {% if request.GET.category == categ.id|stringformat:"i" %}selected{% endif %}>
-            {{ categ.title }}
-        </option>
-        {% endfor %}
-    </select>
-    
-    <select name="manufacturer">
-        <option value="">Все производители</option>
-        {% for manuf in manufacturer %}
-        <option value="{{ manuf.id }}" {% if request.GET.manufacturer == manuf.id|stringformat:"i" %}selected{% endif %}>
-            {{ manuf.title }}
-        </option>
-        {% endfor %}
-    </select>
-    
-    <button type="submit">Применить</button>
-    
-</form>
+<div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px;">
+    <h5 style="font-weight: 600; color: #2c3e50; margin-bottom: 15px;">
+        <i class="bi bi-funnel" style="color: #fc5a5a;"></i> Фильтры
+    </h5>
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+        <!-- Поиск -->
+        <div style="flex: 1; min-width: 150px;">
+            <label style="font-weight: 600; font-size: 14px; color: #2c3e50; display: block; margin-bottom: 5px;">
+                <i class="bi bi-search"></i> Поиск
+            </label>
+            <input type="text" name="search" placeholder="Поиск товаров..." 
+                   value="{{ request.GET.search|default:'' }}"
+                   style="width: 100%; padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 8px; transition: .3s; font-size: 14px;">
+        </div>
+        
+        <div style="flex: 1; min-width: 150px;">
+            <label style="font-weight: 600; font-size: 14px; color: #2c3e50; display: block; margin-bottom: 5px;">
+                <i class="bi bi-tag"></i> Категория
+            </label>
+            <select name="category" style="width: 100%; padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 8px; transition: .3s; font-size: 14px; background: white;">
+                <option value="">Все категории</option>
+                {% for categ in category %}
+                <option value="{{ categ.id }}" {% if request.GET.category == categ.id|stringformat:"i" %}selected{% endif %}>
+                    {{ categ.title }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div style="flex: 1; min-width: 150px;">
+            <label style="font-weight: 600; font-size: 14px; color: #2c3e50; display: block; margin-bottom: 5px;">
+                <i class="bi bi-building"></i> Производитель
+            </label>
+            <select name="manufacturer" style="width: 100%; padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 8px; transition: .3s; font-size: 14px; background: white;">
+                <option value="">Все производители</option>
+                {% for manuf in manufacturer %}
+                <option value="{{ manuf.id }}" {% if request.GET.manufacturer == manuf.id|stringformat:"i" %}selected{% endif %}>
+                    {{ manuf.title }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" style="background: #fc5a5a; color: white; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: .3s;">
+                <i class="bi bi-funnel"></i> Применить
+            </button>
+            <a href="{% url 'catalog' %}" style="background: #e0e0e0; color: #2c3e50; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; transition: .3s;">
+                <i class="bi bi-arrow-counterclockwise"></i> Сбросить
+            </a>
+        </div>
+    </form>
+</div>
+<p style="color: #95a5a6; margin-bottom: 15px; font-size: 14px;">
+    Найдено товаров: <strong style="color: #2c3e50;">{{ products|length }}</strong>
+</p>
 {% endblock %}
-{% block content %}
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
-<ul>
-    {% for p in products %}
-    
-        <div class="product-item">
-            <img src= "{% static p.product_photo.url %}">
-            <div class="product-list">
-              <h3>{{p.title}}/{{ p.category.title }}</h3>
-                <span class="price">₽ {{p.price}} </span>
-                <p>В наличии: {{ p.amount_in_stock }}</p>
-                <a href="{% url 'add_to_cart' item_id=p.id %}" class="button">В корзину</a>
 
+{% block content %}
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;">
+    {% for p in products %}
+    <div class="product-item" style="max-width: 100%;">
+        <a href="{% url 'product_detail' p.id %}" style="text-decoration: none; color: inherit; display: block;">
+            {% if p.product_photo %}
+                <img src="{{ p.product_photo.url }}" alt="{{ p.title }}" style="height: 200px; width: 100%; object-fit: cover;">
+            {% else %}
+                <img src="https://via.placeholder.com/300x200/f8f9fa/cccccc?text=Нет+изображения" alt="{{ p.title }}" style="height: 200px; width: 100%; object-fit: cover;">
+            {% endif %}
+            
+            <div class="product-list">
+                <h3 style="height: 50px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 16px; color: #2c3e50; transition: .3s;">
+                    {{ p.title }}
+                </h3>
+                
+                <div style="font-size: 13px; color: #95a5a6; margin-bottom: 5px;">
+                    <i class="bi bi-tag"></i> {{ p.category.title }}
+                </div>
+                <span class="price" style="display: block; font-size: 20px; font-weight: 700; color: #fc5a5a; margin-bottom: 8px;">
+                    ₽ {{ p.price }}
+                </span>
+                
+                <p style="font-size: 13px; margin-bottom: 12px; {% if p.amount_in_stock > 0 %}color: #27ae60;{% else %}color: #e74c3c;{% endif %}">
+                    {% if p.amount_in_stock > 0 %}
+                        <i class="bi bi-check-circle"></i> В наличии: {{ p.amount_in_stock }} шт.
+                    {% else %}
+                        <i class="bi bi-x-circle"></i> Нет в наличии
+                    {% endif %}
+                </p>
             </div>
-          </div>
+        </a>
+        
+        {% if p.amount_in_stock > 0 %}
+            <a href="{% url 'add_to_cart' item_id=p.id %}" class="button" 
+               style="text-decoration: none; display: inline-block; padding: 0 20px; background: #fc5a5a; color: white; text-transform: uppercase; 
+                      font-size: 13px; font-weight: 600; line-height: 36px; border-radius: 25px; transition: .3s; border: none; 
+                      cursor: pointer; letter-spacing: 0.5px; width: 100%; text-align: center; margin-top: 5px;">
+                <i class="bi bi-cart-plus"></i> В корзину
+            </a>
+        {% else %}
+            <a href="#" class="button" 
+               style="text-decoration: none; display: inline-block; padding: 0 20px; background: #cccccc; color: white; text-transform: uppercase; 
+                      font-size: 13px; font-weight: 600; line-height: 36px; border-radius: 25px; border: none; 
+                      cursor: not-allowed; letter-spacing: 0.5px; width: 100%; text-align: center; pointer-events: none; opacity: 0.6; margin-top: 5px;">
+                <i class="bi bi-x-circle"></i> Нет в наличии
+            </a>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div style="text-align: center; padding: 60px 20px; grid-column: 1 / -1; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <i class="bi bi-box-seam" style="font-size: 4rem; color: #e0e0e0; display: block; margin-bottom: 20px;"></i>
+        <h4 style="color: #2c3e50; margin-bottom: 10px;">Товары не найдены</h4>
+        <p style="color: #95a5a6;">Попробуйте изменить параметры фильтрации</p>
+        <a href="{% url 'catalog' %}" style="display: inline-block; margin-top: 15px; background: #fc5a5a; color: white; padding: 10px 30px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+            <i class="bi bi-arrow-counterclockwise"></i> Сбросить фильтры
+        </a>
+    </div>
     {% endfor %}
-</ul>
+</div>
 {% endblock %}

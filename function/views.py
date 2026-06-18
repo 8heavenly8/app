@@ -1,18 +1,61 @@
 
 from .models import Product, Category, Manufacturer, Cart, Cart_item,Order,OrderItem
-from django.contrib.auth import login
 from io import BytesIO
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
 from .forms import CustomUserCreationForm
 from openpyxl import Workbook
 from django.core.mail import EmailMessage
+from django.http import JsonResponse
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .forms import CustomUserCreationForm
+import json
+
+def api_products(request):
+    """API для получения списка товаров"""
+    products = Product.objects.all()
+    
+
+    category = request.GET.get('category')
+    if category:
+        products = products.filter(category_id=category)
+    
+    search = request.GET.get('search')
+    if search:
+        products = products.filter(
+            Q(title__icontains=search) | Q(description__icontains=search)
+        )
+    
+    data = []
+    for p in products:
+        data.append({
+            'id': p.id,
+            'title': p.title,
+            'price': str(p.price),
+            'amount_in_stock': p.amount_in_stock,
+            'product_photo': p.product_photo.url if p.product_photo else None,
+            'category': p.category.title,
+            'manufacturer': p.manufacturer.title,
+        })
+    
+    return JsonResponse(data, safe=False)
 
 def home(request):
-    return render(request, 'sheets/home.html')
+    """Главная страница"""
+    categories = Category.objects.all()
+    popular_products = Product.objects.filter(amount_in_stock__gt=0).order_by('-id')[:6]
+    
+    context = {
+        'categories': categories,
+        'popular_products': popular_products,
+    }
+    return render(request, 'sheets/home.html', context)
 
 def author(request):
     return render(request, 'sheets/author.html')
@@ -217,3 +260,75 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request,'registration/register.html', {'form': form})
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, f'Добро пожаловать, {user.username}!')
+            return redirect('catalog')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, f'Добро пожаловать, {user.username}!')
+            return redirect('catalog')
+        else:
+            messages.error(request, 'Неверное имя пользователя или пароль.')
+    return render(request, 'registration/login.html')
+
+def user_logout(request):
+    logout(request)
+    messages.info(request, 'Вы вышли из аккаунта.')
+    return redirect('home')
+
+@login_required
+def profile_view(request):
+    profile = request.user.profile
+    return render(request, 'sheets/profile.html', {'profile': profile})
+
+@login_required
+def api_me_get(request):
+    profile = request.user.profile
+    data = {
+        'id': request.user.id,
+        'username': request.user.username,
+        'email': request.user.email,
+        'full_name': profile.full_name,
+        'phone': profile.phone,
+        'address': profile.address,
+        'city': profile.city,
+        'postal_code': profile.postal_code,
+        'role': profile.role,
+        'role_display': profile.get_role_display(),
+        'is_admin': profile.is_admin(),
+    }
+    return JsonResponse(data)
+
+@csrf_exempt
+@login_required
+def api_me_patch(request):
+    if request.method != 'PATCH':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    try:
+        data = json.loads(request.body)
+        profile = request.user.profile
+        fields = ['full_name', 'phone', 'address', 'city', 'postal_code']
+        for field in fields:
+            if field in data:
+                setattr(profile, field, data[field])
+        if 'email' in data:
+            request.user.email = data['email']
+            request.user.save()
+        profile.save()
+        return JsonResponse({'success': True, 'message': 'Профиль обновлен'})
+    except:
+        return JsonResponse({'error': 'Ошибка'}, status=400)

@@ -1,424 +1,72 @@
-{% extends "list.html" %}
+{% extends "shablon.html" %}
 {% load static %}
 
 {% block title %}Оформление заказа - СветМир{% endblock %}
 
 {% block content %}
-<style>
-    .checkout-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 20px 0;
-    }
-    
-    .checkout-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-bottom: 30px;
-        padding: 20px 25px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    
-    .checkout-header h1 {
-        margin: 0;
-        font-size: 28px;
-        font-weight: 700;
-        color: #2c3e50;
-    }
-    
-    .checkout-header h1 i {
-        color: #fc5a5a;
-    }
-    
-    .checkout-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-    }
-    
-    .checkout-items {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    
-    .checkout-items h3 {
-        color: #2c3e50;
-        font-weight: 600;
-        margin-top: 0;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-    
-    .checkout-items h3 i {
-        color: #fc5a5a;
-    }
-    
-    .checkout-item {
-        display: flex;
-        align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid #f5f5f5;
-        gap: 15px;
-    }
-    
-    .checkout-item:last-child {
-        border-bottom: none;
-    }
-    
-    .checkout-item-image {
-        width: 60px;
-        height: 60px;
-        flex-shrink: 0;
-        border-radius: 8px;
-        overflow: hidden;
-        background: #f8f9fa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .checkout-item-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .checkout-item-image i {
-        font-size: 24px;
-        color: #95a5a6;
-    }
-    
-    .checkout-item-info {
-        flex: 1;
-    }
-    
-    .checkout-item-info .name {
-        font-weight: 600;
-        color: #2c3e50;
-        font-size: 15px;
-    }
-    
-    .checkout-item-info .details {
-        font-size: 13px;
-        color: #95a5a6;
-        margin-top: 2px;
-    }
-    
-    .checkout-item-info .price {
-        font-weight: 700;
-        color: #fc5a5a;
-        font-size: 16px;
-    }
-    
-    .checkout-summary {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        position: sticky;
-        top: 80px;
-        align-self: start;
-    }
-    
-    .checkout-summary h3 {
-        color: #2c3e50;
-        font-weight: 600;
-        margin-top: 0;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-    
-    .checkout-summary h3 i {
-        color: #fc5a5a;
-    }
-    
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #f5f5f5;
-        font-size: 15px;
-        color: #34495e;
-    }
-    
-    .summary-row:last-child {
-        border-bottom: none;
-    }
-    
-    .summary-row.total {
-        font-size: 20px;
-        font-weight: 700;
-        color: #2c3e50;
-        border-top: 2px solid #e0e0e0;
-        padding-top: 15px;
-        margin-top: 5px;
-    }
-    
-    .summary-row.total .price {
-        color: #fc5a5a;
-        font-size: 24px;
-    }
-    
-    .checkout-form {
-        margin-top: 20px;
-    }
-    
-    .checkout-form .form-group {
-        margin-bottom: 18px;
-    }
-    
-    .checkout-form label {
-        display: block;
-        font-weight: 600;
-        font-size: 14px;
-        color: #2c3e50;
-        margin-bottom: 6px;
-    }
-    
-    .checkout-form label i {
-        color: #fc5a5a;
-        margin-right: 5px;
-    }
-    
-    .checkout-form label .required {
-        color: #e74c3c;
-        font-weight: 700;
-    }
-    
-    .checkout-form input,
-    .checkout-form textarea {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 14px;
-        transition: .3s;
-        outline: none;
-        box-sizing: border-box;
-        font-family: inherit;
-    }
-    
-    .checkout-form input:focus,
-    .checkout-form textarea:focus {
-        border-color: #fc5a5a;
-        box-shadow: 0 0 0 3px rgba(252, 90, 90, 0.15);
-    }
-    
-    .checkout-form textarea {
-        resize: vertical;
-        min-height: 80px;
-    }
-    
-    .btn-submit {
-        width: 100%;
-        padding: 16px;
-        background: #fc5a5a;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 18px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin-top: 10px;
-    }
-    
-    .btn-submit:hover {
-        background: #e74c3c;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 25px rgba(252, 90, 90, 0.4);
-    }
-    
-    .btn-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #3498db;
-        text-decoration: none;
-        font-weight: 600;
-        margin-top: 20px;
-        transition: .3s;
-    }
-    
-    .btn-back:hover {
-        color: #2980b9;
-        transform: translateX(-5px);
-    }
-    
-    .empty-checkout {
-        text-align: center;
-        padding: 60px 20px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    
-    .empty-checkout i {
-        font-size: 4rem;
-        color: #e0e0e0;
-        display: block;
-        margin-bottom: 20px;
-    }
-    
-    .empty-checkout h3 {
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
-    
-    .empty-checkout p {
-        color: #95a5a6;
-        margin-bottom: 20px;
-    }
-    
-    .empty-checkout .btn-catalog {
-        display: inline-block;
-        text-decoration: none;
-        background: #fc5a5a;
-        color: white;
-        padding: 12px 35px;
-        border-radius: 25px;
-        font-weight: 600;
-        transition: .3s;
-    }
-    
-    .empty-checkout .btn-catalog:hover {
-        background: #e74c3c;
-        transform: translateY(-2px);
-    }
-    
-    @media (max-width: 768px) {
-        .checkout-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .checkout-summary {
-            position: static;
-        }
-        
-        .checkout-header h1 {
-            font-size: 22px;
-        }
-        
-        .checkout-item {
-            flex-wrap: wrap;
-        }
-        
-        .summary-row.total .price {
-            font-size: 20px;
-        }
-    }
-</style>
+<h2 style="color: #2c3e50; margin-bottom: 25px;">
+    <i class="bi bi-credit-card"></i> Оформление заказа
+</h2>
 
-<div class="checkout-container">
-    <!-- Шапка -->
-    <div class="checkout-header">
-        <h1><i class="bi bi-credit-card"></i> Оформление заказа</h1>
-        <span style="color: #95a5a6; font-size: 14px;">
-            <i class="bi bi-person"></i> {{ user.username|default:"Гость" }}
-        </span>
-    </div>
-    
-    {% if items %}
-        <div class="checkout-grid">
-            <!-- Левая колонка - товары -->
-            <div class="checkout-items">
-                <h3><i class="bi bi-cart"></i> Товары в заказе</h3>
+{% if items %}
+    <div class="row">
+        <div class="col-md-8">
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                <h4 style="color: #2c3e50; margin-bottom: 15px;">Ваши товары</h4>
                 {% for item in items %}
-                <div class="checkout-item">
-                    <div class="checkout-item-image">
-                        {% if item.product.product_photo %}
-                            <img src="{{ item.product.product_photo.url }}" alt="{{ item.product.title }}">
-                        {% else %}
-                            <i class="bi bi-image"></i>
-                        {% endif %}
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                    <div>
+                        <strong>{{ item.product.title }}</strong>
+                        <div style="color: #95a5a6; font-size: 14px;">{{ item.product.price }} ₽ × {{ item.amount }}</div>
                     </div>
-                    <div class="checkout-item-info">
-                        <div class="name">{{ item.product.title }}</div>
-                        <div class="details">{{ item.product.category.title }}</div>
-                        <div class="price">{{ item.product.price }} ₽ × {{ item.amount }}</div>
-                    </div>
+                    <div style="font-weight: 700; color: #fc5a5a;">{{ item.total }} ₽</div>
                 </div>
                 {% endfor %}
+                <div style="display: flex; justify-content: space-between; padding: 15px 0; border-top: 2px solid #e0e0e0; font-size: 20px; font-weight: 700;">
+                    <span>Итого:</span>
+                    <span style="color: #fc5a5a;">{{ total_price }} ₽</span>
+                </div>
             </div>
-            
-            <!-- Правая колонка - итог и форма -->
-            <div class="checkout-summary">
-                <h3><i class="bi bi-receipt"></i> Итог заказа</h3>
-                
-                <div class="summary-row">
-                    <span>Товары ({{ items|length }} шт.)</span>
-                    <span>{{ total_price }} ₽</span>
-                </div>
-                <div class="summary-row">
-                    <span>Доставка</span>
-                    <span style="color: #27ae60;">Бесплатно</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Итого к оплате</span>
-                    <span class="price">{{ total_price }} ₽</span>
-                </div>
-                
-                <!-- Форма -->
-                <form method="post" class="checkout-form">
+        </div>
+        
+        <div class="col-md-4">
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h4 style="color: #2c3e50; margin-bottom: 20px;">Данные для доставки</h4>
+                <form method="post">
                     {% csrf_token %}
-                    
-                    <div class="form-group">
-                        <label for="address">
-                            <i class="bi bi-geo-alt"></i> Адрес доставки <span class="required">*</span>
-                        </label>
-                        <input type="text" name="address" id="address" required 
-                               placeholder="Введите полный адрес доставки">
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Адрес доставки *</label>
+                        <input type="text" name="address" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="phone">
-                            <i class="bi bi-phone"></i> Телефон <span class="required">*</span>
-                        </label>
-                        <input type="text" name="phone" id="phone" required 
-                               placeholder="+7 (XXX) XXX-XX-XX">
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Телефон *</label>
+                        <input type="text" name="phone" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="comment">
-                            <i class="bi bi-chat"></i> Комментарий к заказу
-                        </label>
-                        <textarea name="comment" id="comment" rows="3" 
-                                  placeholder="Дополнительные пожелания к заказу..."></textarea>
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Комментарий</label>
+                        <textarea name="comment" rows="3" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;"></textarea>
                     </div>
-                    
-                    <button type="submit" class="btn-submit">
+                    <button type="submit" style="width: 100%; background: #fc5a5a; color: white; border: none; padding: 14px; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; transition: .3s;">
                         <i class="bi bi-check-circle"></i> Подтвердить заказ
                     </button>
                 </form>
-                
-                <a href="{% url 'cart_view' %}" class="btn-back">
-                    <i class="bi bi-arrow-left"></i> Вернуться в корзину
-                </a>
             </div>
         </div>
-    {% else %}
-        <!-- Пустая корзина -->
-        <div class="empty-checkout">
-            <i class="bi bi-cart"></i>
-            <h3>Корзина пуста</h3>
-            <p>Добавьте товары в корзину, чтобы оформить заказ</p>
-            <a href="{% url 'catalog' %}" class="btn-catalog">
-                <i class="bi bi-grid"></i> Перейти в каталог
-            </a>
-        </div>
-    {% endif %}
-</div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'cart_view' %}" style="color: #3498db; text-decoration: none;">
+            <i class="bi bi-arrow-left"></i> Вернуться в корзину
+        </a>
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <i class="bi bi-cart" style="font-size: 4rem; color: #e0e0e0;"></i>
+        <h3 style="color: #2c3e50; margin-top: 15px;">Корзина пуста</h3>
+        <p style="color: #95a5a6;">Добавьте товары в корзину, чтобы оформить заказ</p>
+        <a href="{% url 'catalog' %}" style="display: inline-block; margin-top: 15px; background: #fc5a5a; color: white; padding: 10px 30px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+            <i class="bi bi-grid"></i> Перейти в каталог
+        </a>
+    </div>
+{% endif %}
 {% endblock %}

@@ -9,8 +9,8 @@ urlpatterns = [
     path('catalog/', views.product_list, name = 'catalog'),
     path('catalog/<int:pk>/', views.product_detail, name = 'detail'),
     path('cart/add/<int:item_id>/',views.add_to_cart,name = 'add_to_cart'),
-    path('cart/update/<int:item_id>/',views.cart_update,name = 'cart_update'),
-    path('cart/remove/<int:item_id>/',views.cart_remove,name = 'cart_remove'),
+    path('cart/update/<int:item_id>/', views.cart_update, name='cart_update'),
+    path('cart/remove/<int:item_id>/', views.cart_remove, name='cart_remove'),
     path('cart/', views.cart_view, name='cart_view'),
     path('product/<int:pk>/', views.product_detail, name='product_detail'),
     path('checkout/', views.checkout, name='checkout'),
@@ -27,4 +27,13 @@ urlpatterns = [
 
     path('api/me/', views.api_me_get, name='api_me'),
     path('api/me/update/', views.api_me_patch, name='api_me_patch'),
+    path('api/products/', views.api_products_list, name='api_products'),
+    path('api/products/create/', views.api_product_create, name='api_product_create'),
+    path('api/products/<int:product_id>/', views.api_product_update, name='api_product_update'),
+    path('api/products/<int:product_id>/delete/', views.api_product_delete, name='api_product_delete'),
+    path('api/orders/', views.api_orders_list, name='api_orders'),
+    path('api/orders/<int:order_id>/', views.api_order_detail, name='api_order_detail'),
+    path('api/cart/count/', views.api_cart_count, name='api_cart_count'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -3,34 +3,45 @@
 {% block title %}Регистрация{% endblock %}
 
 {% block content %}
-<div style="max-width: 500px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-    <h2 style="text-align: center; color: #2c3e50;">Регистрация</h2>
-    
-    {% if form.errors %}
-        <div style="background: #fde8e8; padding: 10px; border-radius: 8px; color: #e74c3c; margin-bottom: 15px;">
-            Исправьте ошибки в форме
-        </div>
-    {% endif %}
+<style>
+    .register-container { max-width: 500px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .register-container h2 { text-align: center; color: #2c3e50; margin-bottom: 25px; }
+    .register-container .form-group { margin-bottom: 15px; }
+    .register-container label { font-weight: 600; color: #2c3e50; display: block; margin-bottom: 5px; }
+    .register-container input, .register-container textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; transition: .3s; }
+    .register-container input:focus, .register-container textarea:focus { border-color: #fc5a5a; outline: none; }
+    .register-container .btn-register { width: 100%; background: #fc5a5a; color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; transition: .3s; }
+    .register-container .btn-register:hover { background: #e74c3c; transform: translateY(-2px); }
+    .register-container .errorlist { color: #e74c3c; font-size: 13px; list-style: none; padding: 0; }
+</style>
+
+<div class="register-container">
+    <h2><i class="bi bi-person-plus"></i> Регистрация</h2>
     
     <form method="post">
         {% csrf_token %}
+        
         {% for field in form %}
-            <div style="margin-bottom: 15px;">
-                <label style="font-weight: 600; color: #2c3e50; display: block; margin-bottom: 5px;">
-                    {{ field.label }}
-                </label>
-                {{ field }}
-                {% if field.errors %}
-                    <small style="color: #e74c3c;">{{ field.errors|join:", " }}</small>
-                {% endif %}
-            </div>
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                <ul class="errorlist">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
         {% endfor %}
-        <button type="submit" style="width: 100%; background: #fc5a5a; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer;">
-            Зарегистрироваться
+        
+        <button type="submit" class="btn-register">
+            <i class="bi bi-check-circle"></i> Зарегистрироваться
         </button>
     </form>
+    
     <p style="text-align: center; margin-top: 15px;">
-        Уже есть аккаунт? <a href="{% url 'login' %}" style="color: #fc5a5a;">Войти</a>
+        Уже есть аккаунт? <a href="{% url 'login' %}" style="color: #fc5a5a; font-weight: 600;">Войти</a>
     </p>
 </div>
 {% endblock %}

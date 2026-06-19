@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomUserCreationForm
 import json
+from datetime import datetime
 
 def api_products(request):
     """API для получения списка товаров"""
@@ -94,196 +95,214 @@ def product_detail(request,pk):
     })
 
 @login_required
-def add_to_cart(request, item_id):
-    actual_id = item_id 
-    product = get_object_or_404(Product, pk=actual_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
-
-    cart_item, created = Cart_item.objects.get_or_create(
-        cart=cart,
-        product=product,
-        defaults={'amount': 1}
-    )
-
-    if not created:
-        cart_item.amount += 1
-    else:
-        cart_item.amount = 1
-
-    cart_item.save()
-    messages.success(request, f'{product.title} в корзине.')
-
-    return redirect('cart_view')
 @login_required
+def add_to_cart(request, item_id):
+    """Добавление товара в корзину через сессию"""
+    # Проверяем, существует ли товар
+    try:
+        product = Product.objects.get(id=item_id)
+    except Product.DoesNotExist:
+        messages.error(request, 'Товар не найден!')
+        return redirect('catalog')
+    
+    # Добавляем в сессию
+    cart = request.session.get('cart', {})
+    cart[str(item_id)] = cart.get(str(item_id), 0) + 1
+    request.session['cart'] = cart
+    
+    messages.success(request, f'{product.title} добавлен в корзину!')
+    return redirect('cart_view')
+
 def cart_remove(request, item_id):
-    actual_id = item_id
-    cart = get_object_or_404(Cart,user=request.user)
-    cartitem = get_object_or_404(Cart_item, cart=cart, product_id=actual_id)
-    cartitem.delete()
-    messages.success(request, f"{cartitem.product.title} удалён из корзины")
+    """Удаление товара из корзины"""
+    cart = request.session.get('cart', {})
+    if str(item_id) in cart:
+        del cart[str(item_id)]
+        request.session['cart'] = cart
+        messages.success(request, 'Товар удален из корзины')
     return redirect('cart_view')
 
 def cart_update(request, item_id):
-    if request.method == "POST":
-        amount = int(request.POST.get("amount",1))
-        actual_id = item_id
-        cart, _ = Cart.objects.get_or_create(user=request.user)
-        cartitem = get_object_or_404(Cart_item, cart=cart, product_id=actual_id)
-
-        if amount > cartitem.product.amount_in_stock:
-            messages.error(request, f"Максимальное количество для {cartitem.product.tiitle} — {cartitem.product.amount_in_stock}")
-            amount = cartitem.product.amount_in_stock
-
-        cartitem.amount = amount
-        cartitem.save()
-        messages.success(request, f"Количество {cartitem.product.title} обновлено до {cartitem.amount}")
-
+    if request.method == 'POST':
+        try:
+            amount = int(request.POST.get('amount', 1))
+            cart = request.session.get('cart', {})
+            
+            if str(item_id) in cart:
+                if amount <= 0:
+                    del cart[str(item_id)]
+                else:
+                    cart[str(item_id)] = amount
+                request.session['cart'] = cart
+                messages.success(request, 'Корзина обновлена')
+            else:
+                messages.warning(request, 'Товар не найден в корзине')
+        except ValueError:
+            messages.error(request, 'Некорректное количество')
+    
     return redirect('cart_view')
 
 @login_required
+def cart_remove(request, item_id):
+    cart = request.session.get('cart', {})
+    if str(item_id) in cart:
+        del cart[str(item_id)]
+        request.session['cart'] = cart
+        messages.success(request, 'Товар удален из корзины')
+    else:
+        messages.warning(request, 'Товар не найден в корзине')
+    
+    return redirect('cart_view')
+
+
+@login_required
 def cart_view(request):
-    cart, _ = Cart.objects.get_or_create(user=request.user)
-    items = Cart_item.objects.filter(cart=cart)
-
-    for item in items:
-        item.total = item.product.price * item.amount
-
-    total_price = sum(item.total for item in items)
-
+    """Корзина на сессиях - показывает товары"""
+    cart = request.session.get('cart', {})
+    
+    # Получаем товары из базы по ID из сессии
+    cart_items = []
+    total_price = 0
+    
+    for product_id, quantity in cart.items():
+        try:
+            product = Product.objects.get(id=int(product_id))
+            item = {
+                'product': product,
+                'amount': quantity,
+                'total': product.price * quantity
+            }
+            cart_items.append(item)
+            total_price += item['total']
+        except Product.DoesNotExist:
+            # Если товара нет - удаляем из сессии
+            del cart[product_id]
+            request.session['cart'] = cart
+    
     context = {
-        'cart_items': items,
-        'total_price': total_price
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'cart_count': sum(cart.values())
     }
     return render(request, 'sheets/cart.html', context)
+    
 
 
 @login_required
 def checkout(request):
-    cart, _ = Cart.objects.get_or_create(user=request.user)
-    items = Cart_item.objects.filter(cart=cart)
-
-    if not items:
+    from decimal import Decimal
+    from datetime import datetime
+    import json
+    
+    # Получаем корзину из сессии
+    cart_data = request.session.get('cart', {})
+    
+    if not cart_data:
         messages.error(request, "Корзина пуста")
         return redirect('cart_view')
-
-    # Считаем итоговую сумму с учетом количества каждого товара
-    total_price = sum(item.product.price * item.amount for item in items)
-
+    
+    # Получаем товары из корзины
+    items = []
+    total_price = Decimal('0')
+    
+    for product_id, quantity in cart_data.items():
+        try:
+            product = Product.objects.get(id=int(product_id))
+            item_total = product.price * Decimal(str(quantity))
+            item = {
+                'product': product,
+                'amount': quantity,
+                'total': item_total
+            }
+            items.append(item)
+            total_price += item_total
+        except Product.DoesNotExist:
+            del cart_data[product_id]
+            request.session['cart'] = cart_data
+            messages.warning(request, f'Товар с ID {product_id} больше не доступен')
+            return redirect('checkout')
+    
     if request.method == 'POST':
         address = request.POST.get('address')
         phone = request.POST.get('phone')
-        comment = request.POST.get('comment')
-
+        comment = request.POST.get('comment', '')
+        
         if not address or not phone:
             messages.error(request, "Заполните все обязательные поля")
-            return render(request, 'sheets/checkout.html', {'items': items, 'total_price': total_price})
-
-        # Создаем заказ
-        order = Order.objects.create(
-            user=request.user,
-            address=address,
-            phone=phone,
-            comment=comment,
-            total_price=total_price
-        )
-
-        # Создаем Excel-файл
-        wb = Workbook()
-        ws = wb.active
-        ws.title = f"Заказ {order.id}"
-        ws.append(["Товар", "Количество", "Цена за ед.", "Сумма"])
+            return render(request, 'sheets/checkout.html', {
+                'items': items,
+                'total_price': float(total_price)  # Преобразуем в float
+            })
         
-        for item in items:
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                quantity=item.amount,
-                price=item.product.price
-            )
-            # Записываем в Excel (вызываем метод со скобками)
-            ws.append([
-                item.product.title,
-                item.amount,
-                item.product.price,
-                item.item_price() 
-            ])
-            # Уменьшаем остаток на складе
-            product = item.product
-            product.amount_in_stock -= item.amount
-            product.save()
-
-        ws.append([])
-        ws.append(["Итого", "", "", total_price])
-
-        excel_file = BytesIO()
-        wb.save(excel_file)
-        excel_file.seek(0)
-
-        # Подготовка письма
-        subject = f"Заказ №{order.id}"
-        message = f"Спасибо за заказ, {request.user.username}!\nСумма: {total_price} BYN."
-        from_email = settings.DEFAULT_FROM_EMAIL
-        recipient_list = [request.user.email]
-
-        if request.user.email:
-            email = EmailMessage(subject, message, from_email, recipient_list)
-            email.attach(f"check_{order.id}.xlsx", excel_file.getvalue(), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        try:
+            # Создаем заказ в сессии (преобразуем Decimal в строку)
+            order_data = {
+                'items': {str(k): v for k, v in cart_data.items()},
+                'total_price': str(total_price),  # Преобразуем в строку
+                'address': address,
+                'phone': phone,
+                'comment': comment,
+                'created_at': datetime.now().isoformat()
+            }
+            request.session['order'] = order_data
             
-            # Оборачиваем отправку в try-except, чтобы сайт не падал
-            try:
-                email.send()
-                messages.success(request, f"Заказ №{order.id} успешно оформлен! Чек отправлен.")
-            except Exception as e:
-                print(f"Ошибка почты: {e}")
-                messages.warning(request, f"Заказ №{order.id} оформлен, но чек на почту не ушел.")
-        else:
-            messages.warning(request, f"Заказ №{order.id} оформлен, но у вас не указан email.")
-
-        # ОЧИЩАЕМ КОРЗИНУ (теперь этот код сработает в любом случае)
-        items.delete()
-        return redirect('cart_view')
-
+            # Очищаем корзину
+            request.session['cart'] = {}
+            
+            messages.success(request, f'Заказ успешно оформлен! Сумма: {total_price} ₽')
+            return redirect('cart_view')
+            
+        except Exception as e:
+            messages.error(request, f'Ошибка оформления заказа: {str(e)}')
+            return render(request, 'sheets/checkout.html', {
+                'items': items,
+                'total_price': float(total_price)
+            })
+    
     context = {
         'items': items,
-        'total_price': total_price
+        'total_price': float(total_price)  # Преобразуем в float для шаблона
     }
     return render(request, 'sheets/checkout.html', context)
 
-
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request,user)
-            return redirect('catalog')
+            try:
+                # Создаем пользователя
+                user = form.save(commit=False)
+                user.save()
+                
+                # Проверяем, есть ли уже профиль
+                if not hasattr(user, 'profile'):
+                    Profile.objects.create(user=user)
+                
+                login(request, user)
+                messages.success(request, f'Добро пожаловать, {user.username}!')
+                return redirect('catalog')
+            except Exception as e:
+                messages.error(request, f'Ошибка регистрации: {str(e)}')
     else:
         form = CustomUserCreationForm()
-    return render(request,'registration/register.html', {'form': form})
-def register(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, f'Добро пожаловать, {user.username}!')
-            return redirect('catalog')
-    else:
-        form = CustomUserCreationForm()
+    
     return render(request, 'registration/register.html', {'form': form})
 
 def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        
         user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             login(request, user)
             messages.success(request, f'Добро пожаловать, {user.username}!')
-            return redirect('catalog')
+            next_url = request.GET.get('next', 'catalog')
+            return redirect(next_url)
         else:
             messages.error(request, 'Неверное имя пользователя или пароль.')
-    return render(request, 'registration/login.html')
+        return render(request, 'registration/login.html')
 
 def user_logout(request):
     logout(request)
@@ -293,7 +312,11 @@ def user_logout(request):
 @login_required
 def profile_view(request):
     profile = request.user.profile
-    return render(request, 'sheets/profile.html', {'profile': profile})
+    
+    context = {
+        'profile': profile,
+    }
+    return render(request, 'sheets/profile.html', context)
 
 @login_required
 def api_me_get(request):
@@ -332,3 +355,207 @@ def api_me_patch(request):
         return JsonResponse({'success': True, 'message': 'Профиль обновлен'})
     except:
         return JsonResponse({'error': 'Ошибка'}, status=400)
+
+
+
+def api_products_list(request):
+    """GET /api/products/ - список товаров (доступно всем)"""
+    products = Product.objects.all()
+    
+    # Фильтры
+    category = request.GET.get('category')
+    if category:
+        products = products.filter(category_id=category)
+    
+    search = request.GET.get('search')
+    if search:
+        products = products.filter(
+            Q(title__icontains=search) | Q(description__icontains=search)
+        )
+    
+    data = []
+    for p in products:
+        data.append({
+            'id': p.id,
+            'title': p.title,
+            'price': str(p.price),
+            'amount_in_stock': p.amount_in_stock,
+            'product_photo': p.product_photo.url if p.product_photo else None,
+            'category': p.category.title if p.category else None,
+            'manufacturer': p.manufacturer.title if p.manufacturer else None,
+        })
+    
+    return JsonResponse(data, safe=False)
+
+@csrf_exempt
+@login_required
+def api_product_create(request):
+    """POST /api/products/create/ - создать товар (только ADMIN)"""
+    # Проверка прав
+    if not request.user.profile.is_admin():
+        raise PermissionDenied('Только администратор может создавать товары')
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        
+        category = Category.objects.get(id=data.get('category_id'))
+        manufacturer = Manufacturer.objects.get(id=data.get('manufacturer_id'))
+        
+        product = Product.objects.create(
+            title=data.get('title'),
+            description=data.get('description', ''),
+            price=data.get('price'),
+            amount_in_stock=data.get('amount_in_stock', 0),
+            category=category,
+            manufacturer=manufacturer,
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Товар создан',
+            'product_id': product.id
+        }, status=201)
+        
+    except Category.DoesNotExist:
+        return JsonResponse({'error': 'Категория не найдена'}, status=400)
+    except Manufacturer.DoesNotExist:
+        return JsonResponse({'error': 'Производитель не найден'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+@login_required
+def api_product_update(request, product_id):
+    """PUT/PATCH /api/products/<id>/ - обновить товар (только ADMIN)"""
+    if not request.user.profile.is_admin():
+        raise PermissionDenied('Только администратор может изменять товары')
+    
+    if request.method not in ['PUT', 'PATCH']:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        product = get_object_or_404(Product, id=product_id)
+        data = json.loads(request.body)
+        
+        # Обновляем поля
+        if 'title' in data:
+            product.title = data['title']
+        if 'description' in data:
+            product.description = data['description']
+        if 'price' in data:
+            product.price = data['price']
+        if 'amount_in_stock' in data:
+            product.amount_in_stock = data['amount_in_stock']
+        if 'category_id' in data:
+            product.category = Category.objects.get(id=data['category_id'])
+        if 'manufacturer_id' in data:
+            product.manufacturer = Manufacturer.objects.get(id=data['manufacturer_id'])
+        
+        product.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Товар обновлен',
+            'product': {
+                'id': product.id,
+                'title': product.title,
+                'price': str(product.price),
+                'amount_in_stock': product.amount_in_stock,
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+@login_required
+def api_product_delete(request, product_id):
+    """DELETE /api/products/<id>/ - удалить товар (только ADMIN)"""
+    if not request.user.profile.is_admin():
+        raise PermissionDenied('Только администратор может удалять товары')
+    
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        product = get_object_or_404(Product, id=product_id)
+        product.delete()
+        return JsonResponse({
+            'success': True,
+            'message': 'Товар удален'
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+# ============ API: Заказы ============
+
+@login_required
+def api_orders_list(request):
+    """GET /api/orders/ - список заказов"""
+    if request.user.profile.is_admin():
+        # Админ видит все заказы
+        orders = Order.objects.all().order_by('-created_at')
+    else:
+        # Покупатель видит только свои
+        orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    data = []
+    for order in orders:
+        data.append({
+            'id': order.id,
+            'created_at': order.created_at.strftime('%d.%m.%Y %H:%M'),
+            'total_price': str(order.total_price),
+            'address': order.address,
+            'phone': order.phone,
+            'comment': order.comment or '',
+            'items_count': order.items.count() if hasattr(order, 'items') else 0,
+            'is_my_order': order.user == request.user,
+        })
+    
+    return JsonResponse(data, safe=False)
+
+@login_required
+def api_order_detail(request, order_id):
+    """GET /api/orders/<id>/ - детали заказа"""
+    order = get_object_or_404(Order, id=order_id)
+    
+    # Проверка прав: админ или владелец
+    if not request.user.profile.is_admin() and order.user != request.user:
+        raise PermissionDenied('У вас нет доступа к этому заказу')
+    
+    items = []
+    for item in order.items.all():
+        items.append({
+            'product_title': item.product.title,
+            'quantity': item.quantity,
+            'price': str(item.price),
+            'total': str(item.price * item.quantity),
+        })
+    
+    data = {
+        'id': order.id,
+        'created_at': order.created_at.strftime('%d.%m.%Y %H:%M'),
+        'total_price': str(order.total_price),
+        'address': order.address,
+        'phone': order.phone,
+        'comment': order.comment or '',
+        'items': items,
+        'is_my_order': order.user == request.user,
+    }
+    
+    return JsonResponse(data)
+
+def handler403(request, exception):
+    return JsonResponse({
+        'error': 'Доступ запрещен',
+        'detail': str(exception)
+    }, status=403)
+
+def api_cart_count(request):
+    cart_data = request.session.get('cart', {})
+    total = sum(cart_data.values())
+    return JsonResponse({'count': total})
+

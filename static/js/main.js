@@ -1,4 +1,3 @@
-
 function getCsrfToken() {
     const name = 'csrftoken';
     let cookieValue = null;
@@ -15,9 +14,8 @@ function getCsrfToken() {
     return cookieValue;
 }
 
-function addToCart(productId, quantity = 1) {
+function addToCartHandler(productId, quantity = 1) {
     const csrfToken = getCsrfToken();
-    
     fetch('/api/cart/add/', {
         method: 'POST',
         headers: {
@@ -33,60 +31,109 @@ function addToCart(productId, quantity = 1) {
     .then(data => {
         if (data.success) {
             showNotification('success', data.message);
-            updateCartCount(data.cart_count);
+            updateCartBadge();
         } else {
-            showNotification('danger', data.error || 'Ошибка добавления в корзину');
+            showNotification('danger', data.error || 'Ошибка добавления');
         }
     })
     .catch(error => {
         showNotification('danger', 'Ошибка соединения с сервером');
-        console.error('Error:', error);
     });
 }
 
 function showNotification(type, message) {
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            width: 100%;
+        `;
+        document.body.appendChild(container);
+    }
+    
     const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 80px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.style.cssText = `
+        padding: 15px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        margin-bottom: 0;
+        animation: slideInRight 0.5s ease;
+    `;
     alertDiv.innerHTML = `
         ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%);"></button>
     `;
-    document.body.appendChild(alertDiv);
+    
+    container.appendChild(alertDiv);
     
     setTimeout(() => {
-        alertDiv.remove();
+        if (alertDiv.parentNode) {
+            alertDiv.style.opacity = '0';
+            alertDiv.style.transition = 'opacity 0.5s';
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 500);
+        }
     }, 5000);
 }
 
-function updateCartCount(count) {
-    const cartBadge = document.getElementById('cart-count');
-    if (cartBadge) {
-        cartBadge.textContent = count;
+function updateCartBadge() {
+    const badge = document.getElementById('cart-count');
+    if (badge) {
+        fetch('/api/cart/count/')
+            .then(response => response.json())
+            .then(data => {
+                badge.textContent = data.count || 0;
+            })
+            .catch(() => {});
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateCartBadge();
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+});
+
 async function loadProducts(filters = {}) {
     const container = document.getElementById('products-container');
     const spinner = document.getElementById('loading-spinner');
-    
     if (!container) return;
-    
     if (spinner) spinner.style.display = 'block';
     container.innerHTML = '';
-    
     try {
         const params = new URLSearchParams(filters);
         const url = `/api/products/?${params.toString()}`;
-        
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
         const products = await response.json();
-        
         if (spinner) spinner.style.display = 'none';
-        
         if (products.length === 0) {
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
@@ -96,7 +143,6 @@ async function loadProducts(filters = {}) {
             `;
             return;
         }
-        
         products.forEach(product => {
             const col = document.createElement('div');
             col.className = 'col-md-4 col-sm-6 mb-4';
@@ -112,7 +158,7 @@ async function loadProducts(filters = {}) {
                         <h3>${product.title}</h3>
                         <div class="manufacturer">${product.manufacturer}</div>
                         <span class="price">${product.price} ₽</span>
-                        <button class="btn-add-to-cart" onclick="addToCart(${product.id})">
+                        <button class="btn-add-to-cart" onclick="addToCartHandler(${product.id})">
                             <i class="bi bi-cart-plus"></i> В корзину
                         </button>
                     </div>
@@ -120,7 +166,6 @@ async function loadProducts(filters = {}) {
             `;
             container.appendChild(col);
         });
-        
     } catch (error) {
         if (spinner) spinner.style.display = 'none';
         container.innerHTML = `
@@ -136,78 +181,14 @@ async function loadProducts(filters = {}) {
     }
 }
 
-async function loadProducts(filters = {}) {
-    const container = document.getElementById('products-container');
-    const spinner = document.getElementById('loading-spinner');
-    
-    if (!container) return;
-    
-    if (spinner) spinner.style.display = 'block';
-    container.innerHTML = '';
-    
-    try {
-        const params = new URLSearchParams(filters);
-        const url = `/api/products/?${params.toString()}`;
-        
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[method="post"]').forEach(form => {
+        if (!form.querySelector('[name=csrfmiddlewaretoken]')) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'csrfmiddlewaretoken';
+            input.value = getCsrfToken();
+            form.appendChild(input);
         }
-        
-        const products = await response.json();
-        
-        if (spinner) spinner.style.display = 'none';
-        
-        if (products.length === 0) {
-            container.innerHTML = `
-                <div class="col-12 text-center py-5">
-                    <i class="bi bi-box-seam display-1 text-muted"></i>
-                    <p class="lead mt-3">Товары не найдены</p>
-                </div>
-            `;
-            return;
-        }
-        
-        // Рендерим товары
-        products.forEach(product => {
-            const col = document.createElement('div');
-            col.className = 'col-md-4 col-sm-6 mb-4';
-            col.innerHTML = `
-                <div class="card product-card h-100">
-                    ${product.image ? 
-                        `<img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">` :
-                        `<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                            <i class="bi bi-image display-1 text-secondary"></i>
-                        </div>`
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">${product.name}</h5>
-                        <p class="card-text text-truncate">${product.description || ''}</p>
-                        <p class="product-price">${product.price} ₽</p>
-                        <a href="/product/${product.slug}/" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-eye"></i> Подробнее
-                        </a>
-                        <button class="btn btn-primary btn-sm" onclick="addToCart(${product.id})">
-                            <i class="bi bi-cart-plus"></i> В корзину
-                        </button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(col);
-        });
-        
-    } catch (error) {
-        if (spinner) spinner.style.display = 'none';
-        container.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <i class="bi bi-exclamation-triangle display-1 text-danger"></i>
-                <p class="lead mt-3 text-danger">Ошибка загрузки товаров</p>
-                <p>${error.message}</p>
-                <button class="btn btn-primary" onclick="location.reload()">
-                    <i class="bi bi-arrow-clockwise"></i> Обновить
-                </button>
-            </div>
-        `;
-        console.error('Error loading products:', error);
-    }
-}
+    });
+});

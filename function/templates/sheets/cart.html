@@ -1,429 +1,60 @@
-{% extends "list.html" %}
+{% extends "shablon.html" %}
 {% load static %}
 
 {% block title %}Корзина - СветМир{% endblock %}
 
 {% block content %}
-<style>
-    .cart-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 20px 0;
-    }
-    
-    .cart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-bottom: 30px;
-        padding: 20px 25px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    
-    .cart-header h1 {
-        margin: 0;
-        font-size: 28px;
-        font-weight: 700;
-        color: #2c3e50;
-    }
-    
-    .cart-header h1 i {
-        color: #fc5a5a;
-    }
-    
-    .cart-user-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-    
-    .cart-user-info .user-greeting {
-        font-weight: 600;
-        color: #2c3e50;
-    }
-    
-    .cart-user-info .user-greeting i {
-        color: #fc5a5a;
-    }
-    
-    .btn-logout {
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 8px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: .3s;
-    }
-    
-    .btn-logout:hover {
-        background: #c0392b;
-        transform: translateY(-2px);
-    }
-    
-    .btn-login {
-        text-decoration: none;
-        background: #3498db;
-        color: white;
-        padding: 8px 25px;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: .3s;
-    }
-    
-    .btn-login:hover {
-        background: #2980b9;
-        transform: translateY(-2px);
-    }
-    
-    .cart-table-wrapper {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        overflow: hidden;
-        margin-bottom: 25px;
-    }
-    
-    .cart-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .cart-table th {
-        background: #f8f9fa;
-        color: #2c3e50;
-        font-weight: 600;
-        padding: 15px 20px;
-        text-align: left;
-        border-bottom: 2px solid #e0e0e0;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .cart-table td {
-        padding: 15px 20px;
-        border-bottom: 1px solid #f0f0f0;
-        vertical-align: middle;
-        color: #34495e;
-    }
-    
-    .cart-table tr:last-child td {
-        border-bottom: none;
-    }
-    
-    .cart-table .product-name {
-        font-weight: 600;
-        color: #2c3e50;
-    }
-    
-    .cart-table .product-price {
-        color: #fc5a5a;
-        font-weight: 600;
-    }
-    
-    .cart-table .product-total {
-        font-weight: 700;
-        color: #2c3e50;
-    }
-    
-    .cart-table .quantity-form {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .cart-table .quantity-form input[type="number"] {
-        width: 60px;
-        padding: 6px 8px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        text-align: center;
-        font-size: 14px;
-        transition: .3s;
-        outline: none;
-    }
-    
-    .cart-table .quantity-form input[type="number"]:focus {
-        border-color: #fc5a5a;
-        box-shadow: 0 0 0 3px rgba(252, 90, 90, 0.15);
-    }
-    
-    .btn-update {
-        background: #3498db;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: .3s;
-        font-size: 14px;
-    }
-    
-    .btn-update:hover {
-        background: #2980b9;
-        transform: scale(1.05);
-    }
-    
-    .btn-remove {
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: .3s;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 13px;
-    }
-    
-    .btn-remove:hover {
-        background: #c0392b;
-        transform: scale(1.05);
-    }
-    
-    .cart-summary {
-        background: white;
-        border-radius: 12px;
-        padding: 25px 30px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-    
-    .cart-summary .total-label {
-        font-size: 18px;
-        color: #2c3e50;
-        font-weight: 600;
-    }
-    
-    .cart-summary .total-price {
-        font-size: 32px;
-        font-weight: 700;
-        color: #fc5a5a;
-    }
-    
-    .cart-actions {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-    
-    .btn-catalog {
-        text-decoration: none;
-        background: #e0e0e0;
-        color: #2c3e50;
-        padding: 12px 30px;
-        border-radius: 25px;
-        font-weight: 600;
-        transition: .3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .btn-catalog:hover {
-        background: #d0d0d0;
-        transform: translateY(-2px);
-    }
-    
-    .btn-checkout {
-        text-decoration: none;
-        background: #fc5a5a;
-        color: white;
-        padding: 12px 35px;
-        border-radius: 25px;
-        font-weight: 700;
-        font-size: 16px;
-        transition: .3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .btn-checkout:hover {
-        background: #e74c3c;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(252, 90, 90, 0.4);
-    }
-    
-    .empty-cart {
-        text-align: center;
-        padding: 60px 20px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    
-    .empty-cart i {
-        font-size: 4rem;
-        color: #e0e0e0;
-        display: block;
-        margin-bottom: 20px;
-    }
-    
-    .empty-cart h3 {
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
-    
-    .empty-cart p {
-        color: #95a5a6;
-        margin-bottom: 20px;
-    }
-    
-    .empty-cart .btn-catalog {
-        display: inline-block;
-    }
-    
-    @media (max-width: 768px) {
-        .cart-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .cart-table th,
-        .cart-table td {
-            padding: 10px 12px;
-            font-size: 13px;
-        }
-        
-        .cart-table .quantity-form input[type="number"] {
-            width: 50px;
-        }
-        
-        .cart-summary {
-            flex-direction: column;
-            align-items: stretch;
-            text-align: center;
-        }
-        
-        .cart-actions {
-            justify-content: center;
-        }
-    }
-</style>
+<h2 style="color: #2c3e50; margin-bottom: 25px;">
+    <i class="bi bi-cart"></i> Корзина
+</h2>
 
-<div class="cart-container">
-    <!-- Шапка корзины -->
-    <div class="cart-header">
-        <h1><i class="bi bi-cart"></i> Корзина</h1>
-        <div class="cart-user-info">
-            {% if user.is_authenticated %}
-                <span class="user-greeting">
-                    <i class="bi bi-person-circle"></i> Привет, {{ user.username }}!
-                </span>
-                <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-logout">
-                        <i class="bi bi-box-arrow-right"></i> Выйти
-                    </button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn-login">
-                    <i class="bi bi-box-arrow-in-right"></i> Войти
-                </a>
-            {% endif %}
-        </div>
-    </div>
-    
-    <!-- Содержимое корзины -->
-    {% if cart_items %}
-        <div class="cart-table-wrapper">
-            <table class="cart-table">
-                <thead>
-                    <tr>
-                        <th>Товар</th>
-                        <th>Цена</th>
-                        <th>Количество</th>
-                        <th>Сумма</th>
-                        <th style="text-align: center;">Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart_items %}
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                {% if item.product.product_photo %}
-                                    <img src="{{ item.product.product_photo.url }}" alt="{{ item.product.title }}" 
-                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
-                                {% else %}
-                                    <div style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #95a5a6;">
-                                        <i class="bi bi-image"></i>
-                                    </div>
-                                {% endif %}
-                                <span class="product-name">{{ item.product.title }}</span>
-                            </div>
-                        </td>
-                        <td class="product-price">{{ item.product.price }} ₽</td>
-                        <td>
-                            <form method="post" action="{% url 'cart_update' item.product.id %}" class="quantity-form">
-                                {% csrf_token %}
-                                <input type="number" name="amount" value="{{ item.amount }}" min="1" max="{{ item.product.amount_in_stock }}">
-                                <button type="submit" class="btn-update" title="Обновить">
-                                    <i class="bi bi-arrow-repeat"></i>
-                                </button>
-                            </form>
-                        </td>
-                        <td class="product-total">{{ item.total }} ₽</td>
-                        <td style="text-align: center;">
-                            <a href="{% url 'cart_remove' item.product.id %}" class="btn-remove" 
-                               onclick="return confirm('Удалить товар из корзины?')">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Итог -->
-        <div class="cart-summary">
+{% if cart_items %}
+    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        {% for item in cart_items %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
             <div>
-                <span class="total-label">Итого:</span>
-                <span class="total-price">{{ total_price }} ₽</span>
+                <strong>{{ item.product.title }}</strong>
+                <div style="color: #95a5a6; font-size: 14px;">{{ item.product.price }} ₽ × {{ item.amount }}</div>
             </div>
-            <div class="cart-actions">
-                <a href="{% url 'catalog' %}" class="btn-catalog">
-                    <i class="bi bi-grid"></i> В каталог
-                </a>
-                <a href="{% url 'checkout' %}" class="btn-checkout">
-                    <i class="bi bi-credit-card"></i> Оформить заказ
+            <div>
+                <span style="font-weight: 700; color: #fc5a5a;">{{ item.total }} ₽</span>
+                <a href="{% url 'cart_remove' item.product.id %}" style="color: #e74c3c; margin-left: 15px; text-decoration: none;">
+                    <i class="bi bi-trash"></i>
                 </a>
             </div>
         </div>
+        {% endfor %}
         
-    {% else %}
-        <!-- Пустая корзина -->
-        <div class="empty-cart">
-            <i class="bi bi-cart"></i>
-            <h3>Корзина пуста</h3>
-            <p>Добавьте товары из каталога</p>
-            <a href="{% url 'catalog' %}" class="btn-catalog">
-                <i class="bi bi-grid"></i> Перейти в каталог
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 2px solid #e0e0e0;">
+            <span style="font-size: 20px; font-weight: 700;">Итого:</span>
+            <span style="font-size: 24px; font-weight: 700; color: #fc5a5a;">{{ total_price }} ₽</span>
+        </div>
+        
+        <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+            <a href="{% url 'catalog' %}" style="background: #e0e0e0; color: #2c3e50; padding: 10px 30px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+                <i class="bi bi-arrow-left"></i> Продолжить покупки
+            </a>
+            <a href="{% url 'checkout' %}" style="background: #fc5a5a; color: white; padding: 10px 30px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+                <i class="bi bi-credit-card"></i> Оформить заказ
             </a>
         </div>
-    {% endif %}
-</div>
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <i class="bi bi-cart" style="font-size: 4rem; color: #e0e0e0;"></i>
+        <h3 style="color: #2c3e50; margin-top: 15px;">Корзина пуста</h3>
+        <p style="color: #95a5a6;">Добавьте товары из каталога</p>
+        <a href="{% url 'catalog' %}" style="display: inline-block; margin-top: 15px; background: #fc5a5a; color: white; padding: 10px 30px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+            <i class="bi bi-grid"></i> Перейти в каталог
+        </a>
+    </div>
+{% endif %}
 
-<script>
-// Автоматическое обновление количества при изменении
-document.querySelectorAll('.quantity-form input[type="number"]').forEach(input => {
-    input.addEventListener('change', function() {
-        this.closest('form').submit();
-    });
-});
-</script>
+<!-- Отладка: показываем содержимое сессии -->
+<div style="margin-top: 30px; font-size: 12px; color: #95a5a6; border-top: 1px solid #f0f0f0; padding-top: 15px;">
+    <details>
+        <summary>Отладка корзины (сессия)</summary>
+        <pre>{{ request.session.cart|default:"Пусто" }}</pre>
+    </details>
+</div>
 {% endblock %}

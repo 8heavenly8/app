@@ -80,6 +80,8 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE,verbose_name="Товары")
     quantity = models.PositiveIntegerField(verbose_name="Количество")
     price = models.DecimalField(max_digits=10,decimal_places=2,verbose_name="Цена")
+# function/models.py (добавьте в модель Profile)
+
 class Profile(models.Model):
     ROLE_CHOICES = [
         ('CUSTOMER', 'Покупатель'),
@@ -91,9 +93,9 @@ class Profile(models.Model):
     full_name = models.CharField('Полное имя', max_length=200, blank=True)
     phone = models.CharField('Телефон', max_length=20, blank=True)
     address = models.TextField('Адрес', blank=True)
-    city = models.CharField('Город доставки', max_length=100, blank=True)
-    postal_code = models.CharField('Индекс', max_length=20, blank=True)
-    favorite_category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Любимая категория')
+    city = models.CharField('Город доставки', max_length=100, blank=True)  
+    postal_code = models.CharField('Индекс', max_length=20, blank=True)    
+    favorite_category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Любимая категория')  
     role = models.CharField('Роль', max_length=20, choices=ROLE_CHOICES, default='CUSTOMER')
     avatar = models.ImageField('Аватар', upload_to='avatars/', blank=True, null=True)
     created_at = models.DateTimeField('Дата регистрации', auto_now_add=True)

@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}СветМир{% endblock %}</title>
+    <title>{% block title %}СветМир - Магазин светильников{% endblock %}</title>
     
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     {% load static %}
@@ -55,7 +57,6 @@
             margin-right: 6px;
         }
         
-        /* Активная ссылка */
         .navbar-custom .nav-link.active {
             background: #fc5a5a;
             color: white !important;
@@ -66,46 +67,6 @@
             color: white !important;
         }
         
-        /* Кнопки входа/регистрации */
-        .btn-login {
-            background: transparent;
-            color: #2c3e50;
-            border: 2px solid #e0e0e0;
-            padding: 8px 22px;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        .btn-login:hover {
-            border-color: #fc5a5a;
-            color: #fc5a5a;
-            background: rgba(252, 90, 90, 0.05);
-        }
-        
-        .btn-register {
-            background: #fc5a5a;
-            color: white;
-            border: 2px solid #fc5a5a;
-            padding: 8px 22px;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        .btn-register:hover {
-            background: #e74c3c;
-            border-color: #e74c3c;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(252, 90, 90, 0.3);
-        }
-        
-        /* Аватар пользователя */
         .user-avatar {
             width: 36px;
             height: 36px;
@@ -157,7 +118,6 @@
             margin: 8px 0;
         }
         
-        /* Счетчик корзины */
         .cart-badge {
             position: absolute;
             top: -6px;
@@ -176,7 +136,57 @@
             position: relative;
         }
         
-        /* Мобильная адаптация */
+        .btn-login {
+            background: transparent;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+            padding: 8px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .btn-login:hover {
+            border-color: #fc5a5a;
+            color: #fc5a5a;
+            background: rgba(252, 90, 90, 0.05);
+        }
+        
+        .btn-register {
+            background: #fc5a5a;
+            color: white;
+            border: 2px solid #fc5a5a;
+            padding: 8px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .btn-register:hover {
+            background: #e74c3c;
+            border-color: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(252, 90, 90, 0.3);
+        }
+        
+        .btn-logout {
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            color: #e74c3c;
+        }
+        
+        .btn-logout:hover {
+            background: #fde8e8;
+            color: #c0392b;
+        }
+        
         @media (max-width: 992px) {
             .navbar-custom .navbar-nav {
                 margin-top: 10px;
@@ -232,17 +242,22 @@
                             <span style="font-weight: 600; color: #2c3e50;">{{ user.username }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}">
-                                <i class="bi bi-person"></i> Личный кабинет
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-clock-history"></i> Мои заказы
-                            </a></li>
+                            <!-- ✅ ИСПРАВЛЕННАЯ ССЫЛКА НА ПРОФИЛЬ -->
+                            <li>
+                                <a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="bi bi-person"></i> Личный кабинет
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-clock-history"></i> Мои заказы
+                                </a>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                <form method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}
-                                    <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left; color: #e74c3c;">
+                                    <button type="submit" class="dropdown-item btn-logout">
                                         <i class="bi bi-box-arrow-right"></i> Выйти
                                     </button>
                                 </form>
@@ -333,5 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 {% block scripts %}{% endblock %}
+<script src="{% static 'js/auth.js' %}"></script>
 </body>
 </html>

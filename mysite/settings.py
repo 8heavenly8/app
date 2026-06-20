@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-_ur56-ywz7fr_#3xy@7djxg=zl^^p%_tdwb2^$7iu!nq=pis15')
 
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -105,3 +105,8 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+CSRF_TRUSTED_ORIGINS = [
+    'https://app-production-7e00.up.railway.app',
+    'https://*.up.railway.app',
+]

@@ -9,10 +9,10 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-_ur56-ywz7fr_#3xy@7dj
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = ['*']
 
 if not DEBUG:
-    ALLOWED_HOSTS += ['.up.railway.app', '.railway.app']
+    ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
